@@ -1,0 +1,8 @@
+ServerData/
+Temp/
+Library/
+Logs/
+web/
+Build/
+*.csproj
+TextToolDatas/
