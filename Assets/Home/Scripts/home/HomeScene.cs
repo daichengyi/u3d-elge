@@ -16,6 +16,12 @@ public class HomeScene : MonoBehaviour
         ResourceManager.LoadScene("Game");
     }
 
+    public void onBtnLevelEditor()
+    {
+        UIManager.Instance.ShowLoading();
+        ResourceManager.LoadScene("LevelEditor");
+    }
+
     public void onBtnSet()
     {
         _ = UIManager.Instance.OpenView(VIEW_NAME.Set);
