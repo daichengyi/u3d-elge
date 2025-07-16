@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 112966342}
   - component: {fileID: 112966341}
   - component: {fileID: 112966344}
+  - component: {fileID: 112966345}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -226,6 +227,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 49042d7173b68294f89b93bb2d5cd76c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &112966345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 112966340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b4d0fd60d692fd4a8e75ccc66018af1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &384119545
@@ -387,7 +400,7 @@ Transform:
   m_GameObject: {fileID: 414961535}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2.1388202, y: 0, z: 5.300274}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -951,7 +964,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 989595777}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49042d7173b68294f89b93bb2d5cd76c, type: 3}
+  m_Script: {fileID: 11500000, guid: f7e67c4b5f85ab0408215bc52c2617ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1009700560
@@ -965,7 +978,6 @@ GameObject:
   - component: {fileID: 1009700561}
   - component: {fileID: 1009700564}
   - component: {fileID: 1009700563}
-  - component: {fileID: 1009700562}
   m_Layer: 6
   m_Name: Plane
   m_TagString: Untagged
@@ -988,28 +1000,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 989595778}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!64 &1009700562
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1009700560}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &1009700563
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1335,6 +1325,10 @@ PrefabInstance:
       propertyPath: m_Size.z
       value: 1.8
       objectReference: {fileID: 0}
+    - target: {fileID: 290524986858490493, guid: 3c06fa866f2be434b97239ee1ab69d3b, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 495403447297393961, guid: 3c06fa866f2be434b97239ee1ab69d3b, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -1539,7 +1533,8 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 54045971344457286, guid: 3c06fa866f2be434b97239ee1ab69d3b, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -1570,8 +1565,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 100
-  backDistance: -1
-  backDuration: 0.2
+  raycastDistance: 1
+  collisionLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  showDebugRays: 0
 --- !u!114 &1861894401313794462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1666,6 +1664,10 @@ PrefabInstance:
     - target: {fileID: 290524986858490493, guid: 3c06fa866f2be434b97239ee1ab69d3b, type: 3}
       propertyPath: m_Size.z
       value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 290524986858490493, guid: 3c06fa866f2be434b97239ee1ab69d3b, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 495403447297393961, guid: 3c06fa866f2be434b97239ee1ab69d3b, type: 3}
       propertyPath: m_Layer
@@ -1897,8 +1899,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 100
-  backDistance: -1
-  backDuration: 0.2
+  raycastDistance: 1
+  collisionLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  showDebugRays: 0
 --- !u!223 &4814796442811234874
 Canvas:
   m_ObjectHideFlags: 0

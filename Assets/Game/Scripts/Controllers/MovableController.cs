@@ -2,28 +2,72 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
 public class MovableController : MonoBehaviour
 {
     [SerializeField] float moveSpeed;
-    [SerializeField] float backDistance = -2f;
-    [SerializeField] float backDuration = 0.5f;
+    [SerializeField] float raycastDistance = 1f;
+    [SerializeField] LayerMask collisionLayerMask;
+    [SerializeField] bool showDebugRays = true;
+
     private bool isMoving = false;
-    private bool isRewinding = false;
+
+    // 自定义事件定义
+    public delegate void CollisionDetectedEvent(RaycastHit hit);
+    public event CollisionDetectedEvent OnCollisionDetected;
 
     // Start is called before the first frame update
     void Start()
     {
+        // 初始化事件
+        OnCollisionDetected += HandleCollision;
+    }
 
+    private void OnEnable()
+    {
+        // 注册到GameController
+        if (GameController.Instance != null)
+        {
+            GameController.Instance.RegisterMovable(this);
+        }
+    }
+
+    private void OnDisable()
+    {
+        // 从GameController注销
+        if (GameController.Instance != null)
+        {
+            GameController.Instance.UnregisterMovable(this);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        // 处理移动和前向碰撞检测
         if (isMoving)
         {
             // 根据物体自身旋转角度，朝向本地z轴方向移动
             transform.Translate(0, 0, moveSpeed * Time.deltaTime, Space.Self);
+
+            // 前向射线检测
+            Ray forwardRay = new Ray(transform.position, transform.forward);
+            RaycastHit forwardHit;
+
+            if (showDebugRays)
+            {
+                Debug.DrawRay(transform.position, transform.forward * raycastDistance, Color.red);
+            }
+
+            if (Physics.Raycast(forwardRay, out forwardHit, raycastDistance, collisionLayerMask))
+            {
+                // 检测到碰撞，触发碰撞事件
+                if (OnCollisionDetected != null)
+                {
+                    OnCollisionDetected(forwardHit);
+                }
+            }
 
             // 检查是否移出屏幕
             if (!IsVisibleOnScreen())
@@ -35,39 +79,25 @@ public class MovableController : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter(Collision collision)
+    // 处理碰撞事件
+    private void HandleCollision(RaycastHit hit)
     {
         this.isMoving = false;
-
-        this.isRewinding = true;
-
-        // 停止任何可能正在进行的DOTween动画
-        DOTween.Kill(transform);
-
-        // 使用DOTween实现Z轴回退
-        transform.DOLocalMoveX(transform.localPosition.x + backDistance, backDuration)
-            .SetEase(Ease.InOutElastic)
-            .OnComplete(() =>
-            {
-                isRewinding = false;
-                Debug.Log("Rewind completed");
-            });
+        Debug.Log("Collision detected with: " + hit.transform.name);
     }
 
-    // 注意：此方法要求物体必须有3D Collider组件（如BoxCollider）才能正常工作
-    // 同时确保物体的Layer没有被设置为忽略Raycast，且相机设置正确
-    void OnMouseDown()
+    // 公共接口：开始移动
+    public void StartMoving()
     {
-        // 只有在不处于回退状态时才响应点击
-        if (!isRewinding)
-        {
-            isMoving = true;
-            Debug.Log("3D object clicked, starting to move");
-        }
-        else
-        {
-            Debug.Log("Cannot move while rewinding");
-        }
+        isMoving = true;
+        Debug.Log("Object starting to move");
+    }
+
+    // 公共接口：停止移动
+    public void StopMoving()
+    {
+        isMoving = false;
+        Debug.Log("Object stopped moving");
     }
 
     // 检查物体是否在屏幕内可见
@@ -84,5 +114,15 @@ public class MovableController : MonoBehaviour
                        viewportPosition.z > 0;
 
         return visible;
+    }
+
+    // 在编辑器中绘制调试射线
+    private void OnDrawGizmos()
+    {
+        if (showDebugRays)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawRay(transform.position, transform.forward * raycastDistance);
+        }
     }
 }
