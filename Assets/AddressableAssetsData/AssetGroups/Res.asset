@@ -21,10 +21,17 @@ MonoBehaviour:
     m_Address: Assets/Res/levelIcon
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ccfc9177b0bbea84c8cbf7f93299b952
     m_Address: Assets/Res/bg
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 61f7eb51df472484bb87b0335c6d1d0a
+    m_Address: Assets/Res/Json
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 8a500b0be1ac4c443b3119f0c9ca4ccb, type: 2}
   m_SchemaSet:

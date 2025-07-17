@@ -1,14 +1,10 @@
-using System.Collections;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using ZhiSe;
-using UnityEngine.Networking;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using Newtonsoft.Json;
-using UnityEngine.ResourceManagement.AsyncOperations;
 #if PF_WX
 using WeChatWASM;
 #elif PF_TT

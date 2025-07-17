@@ -2,9 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Reflection;
 using ZhiSe;
 
+/// <summary>
+/// 用户数据
+/// </summary>
 internal class UserModel
 {
 
@@ -30,19 +33,24 @@ internal class UserModel
 	}
 
 	// 当前关卡
-	private int _levelId = 1;
-	public int levelId
+	private int _level = 1;
+	public int level
 	{
-		get { return _levelId; }
-		set { _levelId = value; SetUserData("levelId", _levelId); }
+		get
+		{
+			return 1;//_level;
+		}
+		set
+		{
+			_level = value;
+			SetUserData("level", _level);
+		}
 	}
 	// 用户ID
 	public string userId;
 	// 是否是测试号
 	public bool isTest = false;
 	public string version;
-	// 埋点数据
-	private Dictionary<string, object> buryDot = new();
 
 	private UserModel()
 	{
@@ -51,40 +59,8 @@ internal class UserModel
 
 	public void InitData(Dictionary<string, object> ret)
 	{
-		string key;
-		string value;
-		foreach (var item in ret)
-		{
-			key = item.Key.ToString();
-			value = item.Value.ToString();
-			if (key.StartsWith("dot"))
-			{
-				string newKey = key.Replace("dot_", "");
-				if (newKey.StartsWith("levelId_"))
-				{
-					buryDot[newKey] = JsonConvert.DeserializeObject<Dictionary<string, object>>(value);
-				}
-			}
-			else if (key.StartsWith("user"))
-			{
-				if (key.Equals("user_isNew"))
-				{
-					_isNew = bool.Parse(value);
-				}
-				else if (key.Equals("user_loginTime"))
-				{
-					_loginTime = long.Parse(value);
-				}
-				else if (key.Equals("user_coin"))
-				{
-					_coin = int.Parse(value);
-				}
-				else if (key.Equals("user_levelId"))
-				{
-					_levelId = int.Parse(value);
-				}
-			}
-		}
+		DataParse(ret, this);
+
 		long currentTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 		long preTime = _loginTime;
 		_loginTime = currentTimestamp;
@@ -106,6 +82,30 @@ internal class UserModel
 
 		}
 		SetUserData(data);
+	}
+
+	private void DataParse<T>(Dictionary<string, object> data, T target)
+	{
+		var type = typeof(T);
+		var fields = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+
+		foreach (var item in data)
+		{
+			string key = item.Key;
+			object value = item.Value;
+			var field = fields.FirstOrDefault(f => f.Name.Equals($"_{key}", StringComparison.OrdinalIgnoreCase));
+
+			if (field != null && value != null)
+			{
+				try
+				{
+					// 转换为目标字段类型
+					object convertedValue = Convert.ChangeType(value, field.FieldType);
+					field.SetValue(target, convertedValue);
+				}
+				catch { /* 异常处理 */ }
+			}
+		}
 	}
 
 	private void SetUserData<T>(string key, T value)

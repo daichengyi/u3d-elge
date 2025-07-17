@@ -1,25 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
-using UnityEngine.EventSystems;
 
 public class MovableController : MonoBehaviour
 {
     [SerializeField] float moveSpeed;
-    [SerializeField] float raycastDistance = 1f;
+    /** 射线检测距离 */
+    [SerializeField] float raycastDistance = 1.5f;
+    /** 碰撞层 */
     [SerializeField] LayerMask collisionLayerMask;
+    /** 是否显示调试射线 */
     [SerializeField] bool showDebugRays = true;
 
     private bool isMoving = false;
+
+    /** 
+     * 0: 普通羊
+     * 1: 爆炸羊
+     * 2: 时间羊
+     */
+    private int type = 0;
 
     // 自定义事件定义
     public delegate void CollisionDetectedEvent(RaycastHit hit);
     public event CollisionDetectedEvent OnCollisionDetected;
 
     // Start is called before the first frame update
-    void Start()
+    public void init(int tp)
     {
+        type = tp;
         // 初始化事件
         OnCollisionDetected += HandleCollision;
     }
@@ -27,38 +34,28 @@ public class MovableController : MonoBehaviour
     private void OnEnable()
     {
         // 注册到GameController
-        if (GameController.Instance != null)
-        {
-            GameController.Instance.RegisterMovable(this);
-        }
+        GameController.Instance.RegisterMovable(this);
     }
 
     private void OnDisable()
     {
         // 从GameController注销
-        if (GameController.Instance != null)
-        {
-            GameController.Instance.UnregisterMovable(this);
-        }
+        GameController.Instance.UnregisterMovable(this);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (showDebugRays)
+        {
+            Debug.DrawRay(transform.position, transform.forward * raycastDistance, Color.red);
+        }
         // 处理移动和前向碰撞检测
         if (isMoving)
         {
-            // 根据物体自身旋转角度，朝向本地z轴方向移动
-            transform.Translate(0, 0, moveSpeed * Time.deltaTime, Space.Self);
-
             // 前向射线检测
             Ray forwardRay = new Ray(transform.position, transform.forward);
             RaycastHit forwardHit;
-
-            if (showDebugRays)
-            {
-                Debug.DrawRay(transform.position, transform.forward * raycastDistance, Color.red);
-            }
 
             if (Physics.Raycast(forwardRay, out forwardHit, raycastDistance, collisionLayerMask))
             {
@@ -66,6 +63,7 @@ public class MovableController : MonoBehaviour
                 if (OnCollisionDetected != null)
                 {
                     OnCollisionDetected(forwardHit);
+                    return;
                 }
             }
 
@@ -75,15 +73,20 @@ public class MovableController : MonoBehaviour
                 isMoving = false;
                 Debug.Log("Object moved out of screen");
                 Destroy(gameObject);
+                return;
             }
+
+            // 根据物体自身旋转角度，朝向本地z轴方向移动
+            transform.Translate(0, 0, moveSpeed * Time.deltaTime, Space.Self);
         }
     }
 
     // 处理碰撞事件
     private void HandleCollision(RaycastHit hit)
     {
-        this.isMoving = false;
+        isMoving = false;
         Debug.Log("Collision detected with: " + hit.transform.name);
+        //播放对应动画
     }
 
     // 公共接口：开始移动
@@ -91,6 +94,8 @@ public class MovableController : MonoBehaviour
     {
         isMoving = true;
         Debug.Log("Object starting to move");
+
+
     }
 
     // 公共接口：停止移动

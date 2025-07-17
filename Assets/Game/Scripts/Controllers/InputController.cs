@@ -1,13 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /** 射线输入控制器*/
 public class InputController : MonoBehaviour
 {
     [SerializeField] LayerMask clickableLayerMask;
-    [SerializeField] float maxRayDistance = 100f;
-    [SerializeField] bool showDebugRays = true;
+    private float maxRayDistance = 1000f;
+    private bool showDebugRays = true;
 
     private Camera mainCamera;
 
